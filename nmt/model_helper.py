@@ -1,3 +1,7 @@
+# Copyright 2020 University of Illinois Board of Trustees. All Rights Reserved.
+# Author: Beomyeol Jeon, DPRG (https://dprg.cs.uiuc.edu)
+# This file is part of Baechi, which is released under specific terms. See file License.txt file for full license details.
+# ==============================================================================
 """NMT model helper functions."""
 from __future__ import absolute_import, division, print_function
 

@@ -95,3 +95,6 @@ $ ./bazel-bin/train \
 
 This runs the placement of GNMT v2 operators using m-SCT based on the forward operators.
 When the placement is done, this measures the average step time of the placement results and prints it out.
+
+## License
+University of Illinois/NCSA Open Source License
