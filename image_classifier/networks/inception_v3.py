@@ -591,7 +591,7 @@ def inception_v3(inputs,
         if not num_classes:
           return net, end_points
         # 1 x 1 x 2048
-        net = tf.dropout(
+        net = slim.dropout(
             net, keep_prob=dropout_keep_prob, scope='Dropout_1b')
         end_points['PreLogits'] = net
         # 2048
