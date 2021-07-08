@@ -1,0 +1,24 @@
+FROM continuumio/miniconda3
+
+RUN conda install -y \
+      python=3.6 \
+      numpy=1.16 \
+      tensorflow-gpu=1.12 \
+      bazel=0.20.0 \
+      networkx \
+      future \
+      matplotlib \
+      cvxopt \
+      scikit-learn
+RUN pip install -f https://download.mosek.com/stable/wheel/index.html Mosek==8.1.82
+
+RUN mkdir /baechi
+WORKDIR /baechi
+
+COPY BUILD License.txt README.md WORKSPACE train.py ./
+COPY placer placer
+COPY image_classifier image_classifier
+COPY nmt nmt
+COPY third_party third_party
+COPY utils utils
+

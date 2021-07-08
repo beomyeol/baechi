@@ -1,24 +1,20 @@
-# Baechi: Fase Device Placement on Machine Learning Graphs (SoCC 2020)
+# Baechi: Fast Device Placement on Machine Learning Graphs (SoCC 2020)
 
 ## Install dependencies
-* Basic dependencies
+* Install dependencies with Anaconda
 ```
-$ pip install tensorflow(-gpu)==1.12.3
-$ pip install networkx matplotlib scipy tqdm future scikit-learn
+$ conda install -y python=3.6 numpy=1.16 tensorflow-gpu=1.12 bazel=0.20.0 \
+      networkx future matplotlib cvxopt scikit-learn
 ```
 * Mosek
 ```
-$ pip install cvxopt==1.2.3
 $ pip install -f https://download.mosek.com/stable/wheel/index.html Mosek==8.1.82
 ```
 
-Our code runs [MOSEK](https://www.mosek.com/) as an LP solver. MOSEK provides a free personal academic license.
+Our code runs [MOSEK](https://www.mosek.com/) as an LP solver for SCT.
+MOSEK provides a free personal academic license.
 You can request a license at https://www.mosek.com/products/academic-licenses.
 The license file (`mosek.lic`) should be placed at `$HOME/mosek`.
-
-* Bazel
-Install Bazel by following the instructions at https://docs.bazel.build/versions/0.19.2/install.html.
-Recommended version is 0.19.2. Newer versions might not work.
 
 ## Example usage
 This example generates the placement of 4-layer GNMT v2 with a batch size of 128, a maximum sequence length of 40, and a vocabulary size of 30000.
@@ -93,8 +89,20 @@ $ ./bazel-bin/train \
     --memory_fraction=1.0
 ```
 
-This runs the placement of GNMT v2 operators using m-SCT based on the forward operators.
+This runs the placement of GNMT v2 operators using m-ETF based on the forward operators.
 When the placement is done, this measures the average step time of the placement results and prints it out.
+
+## Docker image
+
+A Docker image with all dependencies installed is available.
+
+```
+$ docker pull beomyeol/baechi
+$ docker run -it --rm --gpus all beomyeol/baechi /bin/bash
+```
+
+This gives you direct access to the container with all GPUs enabled.
+You can follow the example usage within the container.
 
 ## License
 University of Illinois/NCSA Open Source License
