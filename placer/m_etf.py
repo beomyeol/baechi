@@ -132,8 +132,9 @@ class ETFDevice(device_wrapper.DeviceWrapper):
             return
 
         group_name = op_data['colocation_group']
-        _LOGGER.debug('allocate memory. group=%s, num_bytes=%d, used=%d',
-                      group_name, num_bytes, self.used_memory)
+        _LOGGER.debug(
+            'allocate memory. device=%d, group=%s, num_bytes=%d, used=%d',
+            self.id, group_name, num_bytes, self.used_memory)
         if self._reserved_memory_map is not None:
             # memory should have been reserved for the group.
             avail, limit = self._reserved_memory_map[group_name]
@@ -151,8 +152,8 @@ class ETFDevice(device_wrapper.DeviceWrapper):
             assert num_bytes >= 0
             self._reserved_memory_map[group_name] = (0, limit)
 
-        _LOGGER.debug('allocate raw memory. group=%s, num_bytes=%d',
-                      group_name, num_bytes)
+        _LOGGER.debug('allocate raw memory. device=%d, group=%s, num_bytes=%d',
+                      self.id, group_name, num_bytes)
         self._allocate_memory_raw(num_bytes)
 
     def _deallocate_memory_raw(self, num_bytes):
@@ -165,8 +166,9 @@ class ETFDevice(device_wrapper.DeviceWrapper):
             return
 
         group_name = op_data['colocation_group']
-        _LOGGER.debug('deallocate memory. group=%s, num_bytes=%d, used=%d',
-                      group_name, num_bytes, self.used_memory)
+        _LOGGER.debug(
+            'deallocate memory. device=%d, group=%s, num_bytes=%d, used=%d',
+            self.id, group_name, num_bytes, self.used_memory)
 
         if (self._reserved_memory_map is not None
                 and group_name in self._reserved_memory_map):
@@ -180,24 +182,27 @@ class ETFDevice(device_wrapper.DeviceWrapper):
             assert num_bytes >= 0
             self._reserved_memory_map[group_name] = (limit, limit)
 
-        _LOGGER.debug('deallocate raw memory. group=%s, num_bytes=%d',
-                      group_name, num_bytes)
+        _LOGGER.debug(
+            'deallocate raw memory. device=%d, group=%s, num_bytes=%d',
+            self.id, group_name, num_bytes)
         self._deallocate_memory_raw(num_bytes)
 
     def reserve_memory(self, num_bytes, group_name):
         """Reserves memory for the given group."""
         assert group_name not in self._reserved_memory_map
         self._reserved_memory_map[group_name] = (num_bytes, num_bytes)
-        _LOGGER.debug('Reserved memory. group=%s, num_bytes=%d, used=%d',
-                      group_name, num_bytes, self.used_memory)
+        _LOGGER.debug(
+            'Reserved memory. device=%d, group=%s, num_bytes=%d, used=%d',
+            self.id, group_name, num_bytes, self.used_memory)
         self._allocate_memory_raw(num_bytes)
 
     def deallocate_reserved_memory(self, group_name):
         """Deallocates reserved memory for the group."""
         available_bytes, _ = self._reserved_memory_map[group_name]
         _LOGGER.debug(
-            'deallocate reserved memory. group=%s, num_bytes=%d, used=%d',
-            group_name, available_bytes, self.used_memory)
+            'deallocate reserved memory. device=%d, group=%s, num_bytes=%d, '
+            'used=%d',
+            self.id, group_name, available_bytes, self.used_memory)
         self._deallocate_memory_raw(available_bytes)
         del self._reserved_memory_map[group_name]
 
