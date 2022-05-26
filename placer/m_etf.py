@@ -216,8 +216,7 @@ class ETFDevice(device_wrapper.DeviceWrapper):
 
         op_data["p"] = self.id
 
-        # allocate persistent memory
-        self.allocate_memory(op_data["persistent_memory"], op_data)
+        # not update memory yet
 
     def deallocate_predecessor_memory(self, op_id, devices):
         """Deallocates input op's output memory on finishing its successor ops.
@@ -229,9 +228,10 @@ class ETFDevice(device_wrapper.DeviceWrapper):
             executed_out_count = input_op.get("executed_out_count", 0) + 1
             input_op["executed_out_count"] = executed_out_count
             if executed_out_count == self._op_graph.out_degree(input_op_id):
-                # deallocate input op's output memory
-                devices[input_op["p"]].deallocate_memory(
-                    sum(input_op["output_memory"]), input_op)
+                # deallocate input op's output memory except persistent memory
+                num_bytes = sum(input_op["output_memory"]) - \
+                    input_op["persistent_memory"]
+                devices[input_op["p"]].deallocate_memory(num_bytes, input_op)
 
     def run_op(self, op_id):
         """Runs the given op on this device.
