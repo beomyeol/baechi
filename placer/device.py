@@ -146,8 +146,8 @@ class DeviceWrapper():
 
         _LOGGER.debug(
             "Op name=%s runs on device %d. start_ts=%.2f, end_ts=%.2f"
-            + (", ops=%s" % op_data["op_names"]
-               if "op_names" in op_data else ""),
+            + (", ops=%s" % op_data["fused_ops"]
+               if "fused_ops" in op_data else ""),
             op_data['name'],
             self.id,
             op_data['start_ts'],
