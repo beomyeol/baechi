@@ -16,6 +16,7 @@ from collections import deque
 
 import networkx as nx
 from future.utils import bytes_to_native_str
+import numpy as np
 
 import tensorflow as tf
 from placer import adjuster as adjuster_lib
@@ -416,7 +417,7 @@ class DefaultPlacer(Placer):
 
     def __init__(self, tf_graph, devices, method, comm_cost_fn,
                  only_important_ops, memory_fraction=1.0,
-                 log_device_placement=None,
+                 log_device_placement=None, cost_factor=1.0,
                  cost_dict=None, grouper=None, adjustment_method=None,
                  adjustment_with_memory_limit=None, sct_threshold=None,
                  **kwargs):
@@ -443,6 +444,18 @@ class DefaultPlacer(Placer):
             self.op_graph, self.op_index = create_placement_graph(
                 self.tf_graph, self.cost_dict, self.comm_cost_fn,
                 only_important_ops, is_cost_dict=True)
+
+        # adjust cost
+        if cost_factor != 1.0:
+            _LOGGER.info('Adjusting costs. factor=%f', cost_factor)
+            for _, op_data in self.op_graph.nodes.items():
+                op_data["weight"] *= np.random.uniform(1, cost_factor)
+
+            for u, v, edge_data in self.op_graph.edges.data():
+                edge_data["weight"] *= np.random.uniform(1, cost_factor)
+
+                for tensor in edge_data["tensor"]:
+                    tensor["weight"] *= np.random.uniform(1, cost_factor)
 
         # run grouper
         grouper = grouper_lib.get_grouper(self.grouper)
@@ -946,7 +959,8 @@ def get_placer(tf_graph, devices, comm_cost_coeffs, placement_method=None,
                adjustment_method=None, adjustment_with_memory_limit=None,
                only_important_ops=None, memory_fraction=None,
                log_device_placement=None, fusion_check_disjoint_paths=None,
-               fusion_allow_cycle=None, sct_threshold=None):
+               fusion_allow_cycle=None, sct_threshold=None,
+               cost_factor=None):
     """Get placer."""
     placement_method = placement_method or FLAGS.placement_method
 
@@ -1000,7 +1014,8 @@ def get_placer(tf_graph, devices, comm_cost_coeffs, placement_method=None,
         log_device_placement=log_device_placement,
         fusion_check_disjoint_paths=fusion_check_disjoint_paths,
         fusion_allow_cycle=fusion_allow_cycle,
-        sct_threshold=sct_threshold)
+        sct_threshold=sct_threshold,
+        cost_factor=cost_factor)
 
 
 def run_random_placement(tf_graph, devices, ignore_colocation=True):

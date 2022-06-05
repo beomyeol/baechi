@@ -319,16 +319,17 @@ def run_placement(target_op, cost_path, comm_cost_coeffs, cost_factor,
     cost_dict = cost_data['cost_dict']
 
     # adjust costs for sensitivity experiments.
-    if cost_factor != 1.0:
-        cost_dict, comm_cost_coeffs = cost_lib.adjust_costs(
-            cost_factor, cost_dict, comm_cost_coeffs)
+    # if cost_factor != 1.0:
+    #     cost_dict, comm_cost_coeffs = cost_lib.adjust_costs(
+    #         cost_factor, cost_dict, comm_cost_coeffs)
 
     start_time = time.time()
     placer = placer_lib.get_placer(
         graph,
         devices=devices,
         cost_dict=cost_dict,
-        comm_cost_coeffs=comm_cost_coeffs)
+        comm_cost_coeffs=comm_cost_coeffs,
+        cost_factor=cost_factor)
     placer.run()
     _LOGGER.info('Entire placement time: %s', str(time.time() - start_time))
 
