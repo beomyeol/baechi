@@ -785,10 +785,11 @@ class FusedOpPlacer(DefaultPlacer):
         if fused_op_graph.has_edge(from_op_id, to_op_id):
             # update existing edge
             prev_edge = fused_op_graph[from_op_id][to_op_id]
-            prev_edge_tensors = prev_edge['tensor']
+            prev_edge_tensors = [prev_edge_tensor['name'] for prev_edge_tensor
+                                 in prev_edge['tensor']]
             tensors_to_add = [
                 tensor_data for tensor_data in edge_data['tensor']
-                if tensor_data not in prev_edge_tensors]
+                if tensor_data['name'] not in prev_edge_tensors]
             for tensor_data in tensors_to_add:
                 prev_edge['weight'] += tensor_data['weight']
                 prev_edge['tensor'].append(tensor_data)
