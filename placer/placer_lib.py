@@ -447,15 +447,19 @@ class DefaultPlacer(Placer):
 
         # adjust cost
         if cost_factor != 1.0:
-            _LOGGER.info('Adjusting costs. factor=%f', cost_factor)
+            diff = abs(cost_factor - 1.0)
+            min_factor = 1.0 - diff
+            max_factor = 1.0 + diff
+            _LOGGER.info('Adjusting costs. factor range [%.2f..%.2f]', min_factor, max_factor)
             for _, op_data in self.op_graph.nodes.items():
-                op_data["weight"] *= np.random.uniform(1, cost_factor)
+                op_data["weight"] *= np.random.uniform(min_factor, max_factor)
 
             for u, v, edge_data in self.op_graph.edges.data():
-                edge_data["weight"] *= np.random.uniform(1, cost_factor)
+                factor = np.random.uniform(min_factor, max_factor)
+                edge_data["weight"] *= factor
 
                 for tensor in edge_data["tensor"]:
-                    tensor["weight"] *= np.random.uniform(1, cost_factor)
+                    tensor["weight"] *= factor
 
         # run grouper
         grouper = grouper_lib.get_grouper(self.grouper)
